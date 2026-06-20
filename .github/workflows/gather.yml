@@ -1,0 +1,36 @@
+name: Content Gatherer
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours: 00:00, 06:00, 12:00, 18:00 UTC
+  workflow_dispatch:          # manual trigger from the GitHub Actions tab
+
+jobs:
+  gather:
+    name: Gather & Store Content
+    runs-on: ubuntu-latest
+    timeout-minutes: 30       # safety cap — normal runs finish in 2-5 min
+
+    defaults:
+      run:
+        working-directory: content-gatherer
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: content-gatherer/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run content gatherer
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python main.py
