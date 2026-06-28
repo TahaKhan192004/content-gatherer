@@ -27,6 +27,8 @@ from storage import (
     get_client,
     store_content,
     store_ideas,
+    store_content_to_sheet,
+    is_sheets_configured,
     log_run_start,
     log_run_end,
     log_run_error,
@@ -122,17 +124,32 @@ def run_once(dry_run: bool = False):
         stored_content = store_content(client, processed_items, run_id)
         stored_ideas = store_ideas(client, content_ideas, run_id)
 
+        sheets_appended = 0
+        if is_sheets_configured():
+            try:
+                run_date = start.date().isoformat()
+                sheets_appended = store_content_to_sheet(
+                    processed_items, run_date=run_date
+                )
+            except Exception as e:
+                logger.warning(f"Google Sheets export failed (Supabase saved): {e}")
+        else:
+            logger.info("Google Sheets not configured — skipping sheet export")
+
         elapsed = (datetime.now(timezone.utc) - start).total_seconds()
         stats = {
             "raw_count": len(raw_items),
             "processed_count": len(processed_items),
             "stored_count": stored_content,
             "ideas_count": stored_ideas,
+            "sheets_appended": sheets_appended,
             "elapsed_seconds": round(elapsed, 1),
         }
         log_run_end(client, run_id, stats)
 
         logger.info(f"\n✅ Stored {stored_content} items + {stored_ideas} ideas to Supabase")
+        if sheets_appended:
+            logger.info(f"   Appended {sheets_appended} rows to Google Sheets")
         logger.info(f"   Run completed in {elapsed:.1f}s")
 
     except Exception as e:

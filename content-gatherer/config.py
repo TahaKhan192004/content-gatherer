@@ -13,6 +13,15 @@ load_dotenv()
 SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
 SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "")
 
+# Google Sheets — fixed target; auth via env secrets (never commit these)
+GOOGLE_SPREADSHEET_ID = "1A-MF9MdQTrvcu4ZlEYUH-agdTg7CY0qXa_HBPh3F80c"
+GOOGLE_WORKSHEET_NAME = "content gathered"
+GOOGLE_CREDS_JSON: str = os.getenv("GOOGLE_CREDS_JSON", "")
+GOOGLE_TOKEN_JSON: str = os.getenv("GOOGLE_TOKEN_JSON", "")
+GOOGLE_SHEETS_ENABLED: bool = os.getenv("GOOGLE_SHEETS_ENABLED", "true").lower() in (
+    "true", "1", "yes",
+)
+
 # Static API base URLs (not configurable — no dashboard benefit)
 HACKERNEWS_API  = "https://hacker-news.firebaseio.com/v0"
 REDDIT_BASE     = "https://www.reddit.com"

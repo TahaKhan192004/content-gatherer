@@ -41,6 +41,10 @@ desktop.ini
 *.swp
 *.swo
 
+# ── Google OAuth (local only — use GitHub Secrets in CI) ─────────────────────
+creds.json
+token.json
+
 # ── Misc ──────────────────────────────────────────────────────────────────────
 *.log
 *.tmp
